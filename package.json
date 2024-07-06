@@ -1,0 +1,22 @@
+{
+  "name": "wildberries",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel src/index.html --open",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TwetnyFirst/Sasha-Wildberries.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TwetnyFirst/Sasha-Wildberries/issues"
+  },
+  "homepage": "https://github.com/TwetnyFirst/Sasha-Wildberries#readme",
+  "description": "",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  }
+}
