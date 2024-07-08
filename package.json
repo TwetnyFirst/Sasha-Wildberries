@@ -17,6 +17,10 @@
   "homepage": "https://github.com/TwetnyFirst/Sasha-Wildberries#readme",
   "description": "",
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.12.0",
     "parcel": "^2.12.0"
+  },
+  "dependencies": {
+    "swiper": "^11.1.4"
   }
 }

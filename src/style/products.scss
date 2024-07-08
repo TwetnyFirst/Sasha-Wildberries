@@ -1,0 +1,27 @@
+.products {
+}
+.products-wrap{
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-template-rows: repeat(2,1fr);
+    grid-gap: 88px 31px;
+}
+.products__card {
+    
+}
+.card__main {
+    background-color:red;
+}
+.card-main__img {
+
+}
+.card-main__prewatch {
+}
+.card-main__add {
+}
+.card__discription {
+}
+.card-discription__price {
+}
+.card-discrioption__name {
+}
