@@ -2,22 +2,41 @@
 }
 .products-wrap{
     display: grid;
-    grid-template-columns: repeat(6,1fr);
+    grid-template-columns: repeat(4,1fr);
     grid-template-rows: repeat(2,1fr);
     grid-gap: 88px 31px;
 }
 .products__card {
+    overflow: hidden;
+    
     
 }
 .card__main {
-    background-color:red;
 }
 .card-main__img {
-
+    position: relative;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 .card-main__prewatch {
+    position: absolute;
+    align-self: center;
+    padding: 5px 5px;
+    border-radius: 10px;
+    background:red;
+    cursor: pointer;
 }
 .card-main__add {
+    padding: 5px 5px;
+    border-radius: 10px;
+    background:red;
+    cursor: pointer;
+    align-self:end;
+    margin-left: auto;
 }
 .card__discription {
 }
