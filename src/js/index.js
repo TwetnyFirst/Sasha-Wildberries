@@ -68,10 +68,11 @@ async function createProducts(){
         const cardMainAdd = createElement('div','card-main__add','add');
         cardMainAdd.addEventListener('click',(e)=>{
             let id = e.target.parentElement.parentElement.parentElement.getAttribute('id');
-            createItemInCart(id);
-            productsInCart.push(products[products.findIndex((elem) => elem.id == id)]);
+            let itemInCart = products[products.findIndex((elem) => elem.id == id)]; 
+            createItemInCart(itemInCart);
+            console.log(itemInCart);
+            productsInCart.push(itemInCart);
             setItem();
-            console.log(id);
         });
         cardMainImg.append(cardMainAdd);
         //часть с описанием и ценой 
@@ -84,22 +85,22 @@ async function createProducts(){
     }
 
 }
-async function createItemInCart(id){
+async function createItemInCart(item){
     let products = await fetchProducts('https://6688f7220ea28ca88b868e3f.mockapi.io/Wildberies');
     const cartItem = createElement('div','cart__item',null);
 
     const itemImgWrap = createElement('div','item-img__wrap',null);
     const itemImg = createElement('img','item__img',null);
-    itemImg.setAttribute('src',products[products.findIndex((elem) => elem.id == id)].picture);//Функция ищет желемент в массиве данных, в котором Id который мы указали в аргументе фенкции, совпадает с Id елемента.
-    const itemText = createElement('div','item__text',products[id].title);
+    itemImg.setAttribute('src',item.picture);//Функция ищет желемент в массиве данных, в котором Id который мы указали в аргументе фенкции, совпадает с Id елемента.
+    const itemText = createElement('div','item__text',item.title);
     const itemFinally = createElement('div','item__finally',null);
     const itemDelete = createElement('div','item__delete','delete');
     itemDelete.addEventListener('click',() => {
         itemDelete.parentElement.parentElement.remove();
-        productsInCart.splice(productsInCart.indexOf(id),1);
+        // productsInCart.splice(productsInCart.indexOf(id),1);
         setItem();
     });
-    const itemPrice = createElement('div','item__price',products[id].price);
+    const itemPrice = createElement('div','item__price',item.price);
     cartList.append(cartItem);
     cartItem.append(itemImgWrap);
     cartItem.append(itemText);
@@ -117,7 +118,7 @@ function getItem(){
     if(localStorage.getItem('cart')){
         productsInCart = JSON.parse(localStorage.getItem('cart'));
         for(let i = 0; i < productsInCart.length;i++){
-            createItemInCart(productsInCart[i].id);
+            createItemInCart(productsInCart[i]);
         }
     }
 }
