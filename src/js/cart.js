@@ -1,4 +1,4 @@
-import {createElement,root} from './index.js';
+import {createElement,root,allCount,allPrice} from './index.js';
 const cart = createElement('div','cart',null);
 const cartList = createElement('div','cart__list',null);
 
@@ -8,21 +8,23 @@ function createCart(){
     const cartTitle = createElement('div','cart__title',null);
     const title = createElement('h2','title','Cart');
     const cartClose = createElement('div','cart__close','Close');
+    cartClose.addEventListener('click',() => cart.classList.toggle('cart-open'));
     cart.append(cartTitle);
     cartTitle.append(title);
     cartTitle.append(cartClose);
     cart.append(cartList);
 
     const cartSummary = createElement('div','summary',null);
-    const cartCountProducts = createElement('div','summaty__count','count of item : 1');
-    const cartFinallyPrice = createElement('div','sunnary__price','10000');
+    const summaryCount = createElement('div','summary__count',`Products in car: ${allCount()}`);
+    const summaryPrice = createElement('div','summary__price',`Summary price: ${allPrice()}`);
     cart.append(cartSummary);
-    cartSummary.append(cartCountProducts);
-    cartSummary.append(cartFinallyPrice);
+    cartSummary.append(summaryCount);
+    cartSummary.append(summaryPrice);
 
-    const cartSubmit = createElement('div','submit','submit');
-    cart.append();
+        
+
+   
 
 }
 
-export{createCart,cartList};
+export{createCart,cartList,cart};

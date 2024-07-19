@@ -1,17 +1,52 @@
+'use strict'
+//1.ДОбавить при нажалии на + жлемента, чтобы увеличивалась общее количесво + зависимость цены 
+//2.Дизайн
+//3.Поиск 
 import { fetchProducts } from './fetch.js';
 import {createSlider} from './swiper.js';
-import { createCart,cartList } from './cart.js';
-
+import { createCart,cartList,cart } from './cart.js';
 const root = document.querySelector('.root');
 const container = createElement('div','container',null);
 const header = createElement('header','header',null);
-let productsInCart = [];
-
+productsInCart = [];
+cartObject = {
+    count:0,
+    price:0,
+    productsInCart: productsInCart
+}
+function allPrice(){
+    let res = productsInCart.reduce((accum,el) => accum + +priceInCart(el),0);
+    cartObject.price = res;
+    if(productsInCart.length != 0){
+        let summaryPrice = document.querySelector('.summary__price ');
+        summaryPrice.innerHTML = `Summary price: ${res}`;
+    }
+    return res
+}
+function allCount(){
+    let res = productsInCart.reduce((accum,el) => accum + el.counter,0);
+    cartObject.count = res;
+    if(productsInCart != 0){
+        let summaryCount = document.querySelector('.summary__count ');
+        summaryCount.innerHTML = `Products in car:${res}`;
+    }
+    return res
+}
+function priceInCart(item){
+    let res =  item.price * item.counter;
+    return res
+}
+function repleaseCountAndPriceItemInCart (item){
+    let count = document.querySelector(`#i${item.id} .item-count`);
+    let price = document.querySelector(`#i${item.id} .item__price`);
+    count.innerHTML = item.counter;
+    price.innerHTML = priceInCart(item);
+};
 createSlider();
 createHeader();
 createProducts();
-getItem();
 createCart();
+getItem();
 
 function createElement(tagName,className,text){
     const elem = document.createElement(tagName);
@@ -37,13 +72,16 @@ function createHeader(){
     searchInput.setAttribute('type','text');
     searchInput.setAttribute('placeholder','Search');
     searchForm.append(searchInput);
-    const addButton = createElement('button','cart-botton','Cart');
-    header.append(addButton);
+    const cartButton = createElement('button','cart-botton','Cart');
+    cartButton.addEventListener('click',() => cart.classList.toggle('cart-open'));
+    header.append(cartButton);
 }
 async function createProducts(){
     let products = await fetchProducts('https://6688f7220ea28ca88b868e3f.mockapi.io/Wildberies');
     console.log(products);
-
+    products.forEach(element => {
+        element.counter = 1;
+    }); // Каждому улемента добавляет счетчик 
     const productsSection = createElement('section','products',null);
     container.append(productsSection);
 
@@ -68,11 +106,24 @@ async function createProducts(){
         const cardMainAdd = createElement('div','card-main__add','add');
         cardMainAdd.addEventListener('click',(e)=>{
             let id = e.target.parentElement.parentElement.parentElement.getAttribute('id');
-            let itemInCart = products[products.findIndex((elem) => elem.id == id)]; 
-            createItemInCart(itemInCart);
-            console.log(itemInCart);
-            productsInCart.push(itemInCart);
-            setItem();
+            let itemInCart = products[products.findIndex((elem) => elem.id == id)];
+            if(productsInCart.find((elem) => elem.id == itemInCart.id )){
+                let alreadyInCart = productsInCart.find((elem) => elem.id == itemInCart.id);
+                alreadyInCart.counter++;
+                allCount();
+                allPrice();
+                repleaseCountAndPriceItemInCart(alreadyInCart);
+                setItem();
+            }else{
+                productsInCart.push(itemInCart);
+                createItemInCart(itemInCart);
+                allCount();
+                allPrice();
+                setItem();
+            }
+                
+  
+            
         });
         cardMainImg.append(cardMainAdd);
         //часть с описанием и ценой 
@@ -88,41 +139,97 @@ async function createProducts(){
 async function createItemInCart(item){
     let products = await fetchProducts('https://6688f7220ea28ca88b868e3f.mockapi.io/Wildberies');
     const cartItem = createElement('div','cart__item',null);
-
+    cartItem.setAttribute('id',`i${item.id}`);
     const itemImgWrap = createElement('div','item-img__wrap',null);
     const itemImg = createElement('img','item__img',null);
     itemImg.setAttribute('src',item.picture);//Функция ищет желемент в массиве данных, в котором Id который мы указали в аргументе фенкции, совпадает с Id елемента.
-    const itemText = createElement('div','item__text',item.title);
+    const itemDescription = createElement('div','count__wrap',null);
+    const itemText = createElement('span','item__text',item.title);
+    const itemCountWrap = createElement('div','item-count__wrap',null);
+    const itemCountMinus = createElement('div','item-count__minus','-');
+    itemCountMinus.addEventListener('click',() => {
+        item.counter--;
+        if(item.counter <= 0){
+            itemDelete.parentElement.parentElement.remove();
+            item.counter = 1;
+            cartObject.productsInCart = cartObject.productsInCart.filter((el) => el.id != item.id);
+            productsInCart = productsInCart.filter((el) => el.id != item.id);
+            if(productsInCart.length == 0){
+                let summaryPrice = document.querySelector('.summary__price ');
+                summaryPrice.innerHTML = `Summary price: 0`;
+                let summaryCount = document.querySelector('.summary__count ');
+                summaryCount.innerHTML = `Products in car: 0`;
+            }
+        }else{
+            repleaseCountAndPriceItemInCart(item);
+        }
+        allPrice();
+        allCount();
+        setItem();
+        
+    });
+    const itemCount = createElement('div','item-count',item.counter);
+    const itemCountAdd = createElement('div','item-count__plus','+');
+    itemCountAdd.addEventListener('click',() => {
+        item.counter++;
+        repleaseCountAndPriceItemInCart(item);
+        allPrice();
+        allCount();
+        setItem();
+    });
+
+
     const itemFinally = createElement('div','item__finally',null);
     const itemDelete = createElement('div','item__delete','delete');
     itemDelete.addEventListener('click',() => {
+        item.counter = 1;
         itemDelete.parentElement.parentElement.remove();
-        // productsInCart.splice(productsInCart.indexOf(id),1);
+        cartObject.productsInCart = cartObject.productsInCart.filter((el) => el.id != item.id);
+        productsInCart = productsInCart.filter((el) => el.id != item.id);
+        if(productsInCart.length == 0){
+            let summaryPrice = document.querySelector('.summary__price ');
+            summaryPrice.innerHTML = `Summary price: 0`;
+            let summaryCount = document.querySelector('.summary__count ');
+            summaryCount.innerHTML = `Products in car: 0`;
+        }
+        allCount();
+        allPrice();
         setItem();
     });
-    const itemPrice = createElement('div','item__price',item.price);
+    const itemPrice = createElement('div','item__price',priceInCart(item));
     cartList.append(cartItem);
     cartItem.append(itemImgWrap);
-    cartItem.append(itemText);
+    cartItem.append(itemDescription);
+    itemDescription.append(itemText);
+    itemDescription.append(itemCountWrap);
+    itemCountWrap.append(itemCountMinus);
+    itemCountWrap.append(itemCount);
+    itemCountWrap.append(itemCountAdd);
     cartItem.append(itemFinally);
     itemImgWrap.append(itemImg);
     itemFinally.append(itemDelete);
     itemFinally.append(itemPrice);
+    
+    
 }
 
 //LocalStorage
 function setItem(){
-    localStorage.setItem('cart',JSON.stringify(productsInCart));
+    localStorage.setItem('cart',JSON.stringify(cartObject));
 }
 function getItem(){
     if(localStorage.getItem('cart')){
-        productsInCart = JSON.parse(localStorage.getItem('cart'));
-        for(let i = 0; i < productsInCart.length;i++){
-            createItemInCart(productsInCart[i]);
+        cartObject = JSON.parse(localStorage.getItem('cart'));
+        productsInCart = cartObject.productsInCart;
+        console.log(cartObject);
+        for(let i = 0; i < cartObject.productsInCart.length;i++){
+            createItemInCart(cartObject.productsInCart[i]);
         }
+        allPrice();
+        allCount();
     }
 }
 
 
 
-export {createElement,header,root,setItem,productsInCart};
+export {createElement,header,root,setItem,allPrice,allCount};
