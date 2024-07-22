@@ -61,18 +61,18 @@ function createElement(tagName,className,text){
     }
     return elem;
 }
-function createHeader(){
+  function createHeader(){
     root.append(container);
     container.prepend(header);
     const headerLogo = createElement('h1','header__logo',"Wildberries");
     header.append(headerLogo);
     const searchForm = createElement('form','search',null);
     header.append(searchForm);
-    const searchInput = createElement('input',null,null);
+    const searchInput = createElement('input','search__input',null);
     searchInput.setAttribute('type','text');
     searchInput.setAttribute('placeholder','Search');
     searchForm.append(searchInput);
-    const cartButton = createElement('button','cart-botton','Cart');
+    const cartButton = createElement('botton','cart-botton','Cart');
     cartButton.addEventListener('click',() => cart.classList.toggle('cart-open'));
     header.append(cartButton);
 }
@@ -81,7 +81,26 @@ async function createProducts(){
     console.log(products);
     products.forEach(element => {
         element.counter = 1;
-    }); // Каждому улемента добавляет счетчик 
+    });
+    let searchInput = document.querySelector('.search__input');
+    searchInput.addEventListener('keydown',() => {
+        let productsTitle = document.querySelectorAll('.card-discrioption__name');
+        if(searchInput.value != ''){
+            console.log(productsTitle);
+            productsTitle.forEach((elem) => {
+                if(elem.innerText.search(searchInput.value) == -1){
+                    elem.parentElement.parentElement.classList.add('hide');
+                }else{
+                    elem.parentElement.parentElement.classList.remove('hide');
+                }
+            });
+        }else{
+            productsTitle.forEach((elem) => {
+                elem.parentElement.parentElement.classList.remove('hide');
+            });
+        }
+    })
+    
     const productsSection = createElement('section','products',null);
     container.append(productsSection);
 
@@ -89,9 +108,9 @@ async function createProducts(){
     productsSection.append(title);
     const wrap = createElement('div','products-wrap',null);
     productsSection.append(wrap);
-    for(let i = 0; i < 10; i++){
+    for(let i = 0; i < products.length; i++){
         const card = createElement('div','products__card',null);
-        card.setAttribute('id',products[i].id);
+        card.setAttribute('id',`${products[i].id}`);
         wrap.append(card);
         //Часть с изображением
         const cardMain = createElement('div','card__main',null);
@@ -101,9 +120,18 @@ async function createProducts(){
         cardMainImg.setAttribute('style',`background-image: url(${products[i].picture});`);
         cardMain.append(cardMainImg);
         //кнопки предпросмотра и добавление в корзину 
-        const cardMainPreWatch = createElement('div','card-main__prewatch','prewatch');
+        const cardMainPreWatch = createElement('div','card-main__prewatch','Prewatch');
+        cardMainPreWatch.addEventListener('click',() => {
+            cardMain.classList.toggle('prewatch');
+            if(cardMainPreWatch.innerHTML == 'Close'){
+                cardMainPreWatch.innerHTML = 'Prewatch';
+            }else{
+                cardMainPreWatch.innerHTML = 'Close';
+            }
+        });
+
         cardMainImg.append(cardMainPreWatch);
-        const cardMainAdd = createElement('div','card-main__add','add');
+        const cardMainAdd = createElement('div','card-main__add','+');
         cardMainAdd.addEventListener('click',(e)=>{
             let id = e.target.parentElement.parentElement.parentElement.getAttribute('id');
             let itemInCart = products[products.findIndex((elem) => elem.id == id)];
@@ -129,10 +157,10 @@ async function createProducts(){
         //часть с описанием и ценой 
         const cardDiscription = createElement('div','card__discription',null);
         card.append(cardDiscription);
-        const cardPrice = createElement('div','card-discription__price',products[i].price);
-        cardDiscription.append(cardPrice);
-        const cardName = createElement('div','card-discrioption__name',products[i].title);
+        const cardPrice = createElement('div','card-discription__price',`Price: ${products[i].price} $`);
+        const cardName = createElement('div','card-discrioption__name',`${products[i].title}`);
         cardDiscription.append(cardName);
+        cardDiscription.append(cardPrice);
     }
 
 }
@@ -142,7 +170,7 @@ async function createItemInCart(item){
     cartItem.setAttribute('id',`i${item.id}`);
     const itemImgWrap = createElement('div','item-img__wrap',null);
     const itemImg = createElement('img','item__img',null);
-    itemImg.setAttribute('src',item.picture);//Функция ищет желемент в массиве данных, в котором Id который мы указали в аргументе фенкции, совпадает с Id елемента.
+    itemImg.setAttribute('src',item.picture); 
     const itemDescription = createElement('div','count__wrap',null);
     const itemText = createElement('span','item__text',item.title);
     const itemCountWrap = createElement('div','item-count__wrap',null);
@@ -152,7 +180,7 @@ async function createItemInCart(item){
         if(item.counter <= 0){
             itemDelete.parentElement.parentElement.remove();
             item.counter = 1;
-            cartObject.productsInCart = cartObject.productsInCart.filter((el) => el.id != item.id);
+            // cartObject.productsInCart = cartObject.productsInCart.filter((el) => el.id != item.id);
             productsInCart = productsInCart.filter((el) => el.id != item.id);
             if(productsInCart.length == 0){
                 let summaryPrice = document.querySelector('.summary__price ');

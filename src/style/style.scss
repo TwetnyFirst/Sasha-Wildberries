@@ -1,3 +1,4 @@
+@import './fonts.scss';
 @import '../../node_modules/swiper/swiper-bundle.min.css';
 @import './header.scss';
 @import './swiper.scss';
@@ -18,13 +19,9 @@
     z-index: 5;
 }
 .root{
+    font-family: "Roboto Condensed", sans-serif;
     position: relative;
+    background:#414833;
 }
-
-
-
-
-
-
 
 
